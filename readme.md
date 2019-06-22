@@ -22,3 +22,9 @@ bin/zookeeper-server-start.sh config/zookeeper.properties
 ```sh
   bin/kafka-server-start.sh config/server.properties
 ```
+
+- to verify the zookeeper is up.
+
+```sh 
+telnet localhost 2181  
+```
