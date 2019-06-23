@@ -1,24 +1,30 @@
 import * as React from "react";
 import { render } from "react-dom";
 
-const startStream = () => {
-	var sseSource = new EventSource("http://localhost:5000/event-stream");
-	sseSource.onmessage = function(e) {
-		var data = JSON.parse(e.data);
-		const value = JSON.parse(data.value);
+const isJson = str => {
+	try {
+		JSON.parse(str);
+	} catch (e) {
+		return false;
+	}
+	return true;
+};
+
+const activateStream = () => {
+	const sseSource = new EventSource("http://localhost:5000/event-stream");
+	sseSource.onmessage = response => {
+		const data = JSON.parse(response.data);
+		const strValue = data.value;
+		let value = strValue;
+		if (isJson(strValue)) value = JSON.parse(strValue);
 		console.log(value);
 	};
-	sseSource.onerror = function(e) {
-		window.error = e;
-		console.log("error", JSON.stringify(e, null, 2));
-	};
-	sseSource.addEventListener("ping", function(e) {
-		console.log("ping results:", e);
-	});
+	sseSource.onerror = e => console.log("error", JSON.stringify(e, null, 2));
+	sseSource.addEventListener("ping", p => console.log("ping results:", p));
 };
 
 const App = () => {
-	startStream();
+	activateStream();
 	return <p>Hello World</p>;
 };
 
